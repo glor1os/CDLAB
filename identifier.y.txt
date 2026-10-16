@@ -1,0 +1,25 @@
+%{
+#include <stdio.h>
+int yylex();
+int yyerror(const char *s);
+%}
+
+%token ID
+
+%%
+input: ID '\n'      { printf("Valid Identifier\n"); return 0; }
+     | error '\n'   { printf("Invalid Identifier\n"); return 0; }
+     ;
+%%
+
+int yyerror(const char *s)
+{
+    return 0;
+}
+
+int main()
+{
+    printf("Enter an identifier: ");
+    yyparse();
+    return 0;
+}

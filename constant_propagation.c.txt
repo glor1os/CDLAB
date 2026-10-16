@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+struct expr {
+    char op[5];
+    char arg1[10];
+    char arg2[10];
+    char res[10];
+    int flag;
+} arr[30];
+
+int isNum(char *s) {
+    int i = 0;
+    if (s[0] == '-' || s[0] == '+') i++;
+    if (!s[i]) return 0;
+    for (; s[i]; i++) {
+        if (!isdigit(s[i])) return 0;
+    }
+    return 1;
+}
+
+int main() {
+    int n;
+    printf("Enter number of 3-address codes: ");
+    if (scanf("%d", &n) != 1) return 0;
+    
+    printf("Enter expressions in format: op arg1 arg2 res (use '?' for unused arg2)\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%s %s %s %s", arr[i].op, arr[i].arg1, arr[i].arg2, arr[i].res);
+        arr[i].flag = 0;
+    }
+    
+    for (int i = 0; i < n; i++) {
+        if (strcmp(arr[i].op, "=") == 0 && isNum(arr[i].arg1)) {
+            char val[10], var[10];
+            strcpy(val, arr[i].arg1);
+            strcpy(var, arr[i].res);
+            arr[i].flag = 1; // Mark assignment as propagated
+            
+            for (int j = i + 1; j < n; j++) {
+                if (strcmp(arr[j].arg1, var) == 0) strcpy(arr[j].arg1, val);
+                if (strcmp(arr[j].arg2, var) == 0) strcpy(arr[j].arg2, val);
+                if (strcmp(arr[j].res, var) == 0) break; // Variable redefined
+            }
+        }
+    }
+    
+    printf("\nOptimized Code (after constant propagation):\n");
+    for (int i = 0; i < n; i++) {
+        if (!arr[i].flag) {
+            printf("%s %s %s %s\n", arr[i].op, arr[i].arg1, arr[i].arg2, arr[i].res);
+        }
+    }
+    return 0;
+}
